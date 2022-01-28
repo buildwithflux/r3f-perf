@@ -43,6 +43,10 @@ const Html = /*#__PURE__*/ React.forwardRef((_ref, ref) => {
 
   const [el] = React.useState(() => document.createElement('div'));
   const group = React.useRef(null);
+  
+  // @ts-expect-error React 18 types aren't available yet
+  const root = React.useMemo(() => ReactDOM.createRoot(el), [el])
+  
   const target =
     (_portal$current = portal == null ? void 0 : portal.current) != null
       ? _portal$current
@@ -55,14 +59,14 @@ const Html = /*#__PURE__*/ React.forwardRef((_ref, ref) => {
       }
       return () => {
         if (target) target.removeChild(el);
-        ReactDOM.unmountComponentAtNode(el);
+        root.unmount();
       };
     }
     return undefined;
   }, [target, el]);
-
+  
   React.useLayoutEffect(() => {
-    ReactDOM.render(
+    root.render(
       /*#__PURE__*/ React.createElement('div', {
         ref: ref,
         className: className,
