@@ -1,5 +1,7 @@
 ![npm](https://img.shields.io/npm/v/r3f-perf) ![npm](https://img.shields.io/npm/dw/r3f-perf)
 
+# Forked to make work woth react v18 RC
+
 # R3F-Perf
 
 Easily monitor the performances of your @react-three/fiber application.
