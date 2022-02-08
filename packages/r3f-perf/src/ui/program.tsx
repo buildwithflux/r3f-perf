@@ -1,14 +1,14 @@
-import React, { FC, useEffect, useState } from 'react';
-import { IoIosImages } from 'react-icons/io';
-import { IoIosImage } from 'react-icons/io';
-import { BsEyeSlashFill } from 'react-icons/bs';
-import { BsEyeFill } from 'react-icons/bs';
-import { IoRocketSharp } from 'react-icons/io5';
-import { IoLayers } from 'react-icons/io5';
-import { IoShapes } from 'react-icons/io5';
-import { GoSettings } from 'react-icons/go';
-import { ProgramsPerf, usePerfStore } from '../headless';
-import { Texture } from 'three';
+import React, { FC, useEffect, useState } from 'react'
+import { IoIosImages } from '@react-icons/all-files/io/IoIosImages'
+import { IoIosImage } from '@react-icons/all-files/io/IoIosImage'
+import { BsEyeSlashFill } from '@react-icons/all-files/bs/BsEyeSlashFill'
+import { BsEyeFill } from '@react-icons/all-files/bs/BsEyeFill'
+import { IoRocketSharp } from '@react-icons/all-files/io5/IoRocketSharp'
+import { IoLayers } from '@react-icons/all-files/io5/IoLayers'
+import { IoShapes } from '@react-icons/all-files/io5/IoShapes'
+import { GoSettings } from '@react-icons/all-files/go/GoSettings'
+import { ProgramsPerf, usePerfStore } from '../headless'
+import { Texture } from 'three'
 
 import {
   ProgramGeo,
@@ -22,68 +22,68 @@ import {
   PerfI,
   PerfB,
   ProgramsGeoLi,
-} from '../styles';
-import { RiArrowDownSFill } from 'react-icons/ri';
-import { RiArrowRightSFill } from 'react-icons/ri';
-import { PerfProps } from '..';
-import { BsTriangle } from 'react-icons/bs';
-import { VscActivateBreakpoints } from 'react-icons/vsc';
-import { estimateBytesUsed } from 'three-stdlib';
+} from '../styles'
+import { RiArrowDownSFill } from '@react-icons/all-files/ri/RiArrowDownSFill'
+import { RiArrowRightSFill } from '@react-icons/all-files/ri/RiArrowRightSFill'
+import { PerfProps } from '..'
+import { BsTriangle } from '@react-icons/all-files/bs/BsTriangle'
+import { VscActivateBreakpoints } from '@react-icons/all-files/vsc/VscActivateBreakpoints'
+import { estimateBytesUsed } from 'three-stdlib'
 
 const addTextureUniforms = (id: string, texture: any) => {
   const repeatType = (wrap: number) => {
     switch (wrap) {
       case 1000:
-        return 'RepeatWrapping';
+        return 'RepeatWrapping'
       case 1001:
-        return 'ClampToEdgeWrapping';
+        return 'ClampToEdgeWrapping'
       case 1002:
-        return 'MirroredRepeatWrapping';
+        return 'MirroredRepeatWrapping'
       default:
-        return 'ClampToEdgeWrapping';
+        return 'ClampToEdgeWrapping'
     }
-  };
+  }
 
   const encodingType = (encoding: number) => {
     switch (encoding) {
       case 3000:
-        return 'LinearEncoding';
+        return 'LinearEncoding'
       case 3001:
-        return 'sRGBEncoding';
+        return 'sRGBEncoding'
       case 3002:
-        return 'RGBEEncoding';
+        return 'RGBEEncoding'
       case 3003:
-        return 'LogLuvEncoding';
+        return 'LogLuvEncoding'
       case 3004:
-        return 'RGBM7Encoding';
+        return 'RGBM7Encoding'
       case 3005:
-        return 'RGBM16Encoding';
+        return 'RGBM16Encoding'
       case 3006:
-        return 'RGBDEncoding';
+        return 'RGBDEncoding'
       case 3007:
-        return 'GammaEncoding';
+        return 'GammaEncoding'
       default:
-        return 'ClampToEdgeWrapping';
+        return 'ClampToEdgeWrapping'
     }
-  };
+  }
   return {
     name: id,
     url: texture.image.currentSrc,
     encoding: encodingType(texture.encoding),
     wrapT: repeatType(texture.image.wrapT),
     flipY: texture.flipY.toString(),
-  };
-};
+  }
+}
 
 const UniformsGL = ({ program, material, setTexNumber }: any) => {
-  const gl = usePerfStore((state) => state.gl);
-  const [uniforms, set] = useState<any | null>(null);
+  const gl = usePerfStore((state) => state.gl)
+  const [uniforms, set] = useState<any | null>(null)
 
   useEffect(() => {
     if (gl) {
-      const data: any = program?.getUniforms();
-      let TexCount = 0;
-      const format: any = new Map();
+      const data: any = program?.getUniforms()
+      let TexCount = 0
+      const format: any = new Map()
 
       data.seq.forEach((e: any) => {
         if (
@@ -97,65 +97,65 @@ const UniformsGL = ({ program, material, setTexNumber }: any) => {
           e.id !== 'modelMatrix' &&
           e.id !== 'modelViewMatrix'
         ) {
-          let values: any = [];
+          let values: any = []
           let data: any = {
             name: e.id,
-          };
+          }
           if (e.cache) {
             e.cache.forEach((v: any) => {
               if (typeof v !== 'undefined') {
-                values.push(v.toString().substring(0, 4));
+                values.push(v.toString().substring(0, 4))
               }
-            });
-            data.value = values.join();
+            })
+            data.value = values.join()
             if (material[e.id] && material[e.id].image) {
               if (material[e.id].image) {
-                TexCount++;
-                data.value = addTextureUniforms(e.id, material[e.id]);
+                TexCount++
+                data.value = addTextureUniforms(e.id, material[e.id])
               }
             }
             if (!data.value) {
-              data.value = 'empty';
+              data.value = 'empty'
             }
-            format.set(e.id, data);
+            format.set(e.id, data)
           }
         }
-      });
+      })
 
       if (material.uniforms) {
         Object.keys(material.uniforms).forEach((key: any) => {
-          const uniform = material.uniforms[key];
+          const uniform = material.uniforms[key]
           if (uniform.value) {
-            const { value } = uniform;
+            const { value } = uniform
             let data: any = {
               name: key,
-            };
+            }
             if (key.includes('uTroika')) {
-              return;
+              return
             }
             if (value instanceof Texture) {
-              TexCount++;
-              data.value = addTextureUniforms(key, value);
+              TexCount++
+              data.value = addTextureUniforms(key, value)
             } else {
-              let sb = JSON.stringify(value);
+              let sb = JSON.stringify(value)
               try {
-                sb = JSON.stringify(value);
+                sb = JSON.stringify(value)
               } catch (_err) {
-                sb = value.toString();
+                sb = value.toString()
               }
-              data.value = sb;
+              data.value = sb
             }
-            format.set(key, data);
+            format.set(key, data)
           }
-        });
+        })
       }
 
       if (TexCount > 0) {
-        setTexNumber(TexCount);
+        setTexNumber(TexCount)
       }
-      set(format);
+      set(format)
     }
-  }, []);
+  }, [])
 
   return (
     <ProgramsUL>
@@ -192,49 +192,40 @@ const UniformsGL = ({ program, material, setTexNumber }: any) => {
                             </li>
                           )}
                         </div>
-                      ) : null;
+                      ) : null
                     })}
                     <ProgramConsole
                       onClick={() => {
-                        console.info(
-                          material[uniform.value.name] ||
-                            material?.uniforms[uniform.value.name]?.value
-                        );
-                      }}
-                    >
+                        console.info(material[uniform.value.name] || material?.uniforms[uniform.value.name]?.value)
+                      }}>
                       console.info({uniform.value.name});
                     </ProgramConsole>
                   </div>
                 </>
               )}
             </span>
-          );
+          )
         })}
     </ProgramsUL>
-  );
-};
+  )
+}
 type ProgramUIProps = {
-  el: ProgramsPerf;
-};
+  el: ProgramsPerf
+}
 
 const DynamicDrawCallInfo = ({ el }: any) => {
-  usePerfStore((state) => state.log);
-  const gl = usePerfStore((state) => state.gl);
+  usePerfStore((state) => state.log)
+  const gl = usePerfStore((state) => state.gl)
 
   const getVal = (el: any) => {
-    if (!gl) return 0;
+    if (!gl) return 0
 
     const res =
       Math.round(
-        (el.drawCounts.total /
-          (gl.info.render.triangles +
-            gl.info.render.lines +
-            gl.info.render.points)) *
-          100 *
-          10
-      ) / 10;
-    return (isFinite(res) && res) || 0;
-  };
+        (el.drawCounts.total / (gl.info.render.triangles + gl.info.render.lines + gl.info.render.points)) * 100 * 10
+      ) / 10
+    return (isFinite(res) && res) || 0
+  }
   return (
     <>
       {el.drawCounts.total > 0 && (
@@ -247,39 +238,36 @@ const DynamicDrawCallInfo = ({ el }: any) => {
           {el.drawCounts.total}
           <small>{el.drawCounts.type}s</small>
           {gl && (
-            <PerfB
-              style={{ bottom: '-10px', width: '40px', fontWeight: 'bold' }}
-            >
+            <PerfB style={{ bottom: '-10px', width: '40px', fontWeight: 'bold' }}>
               {el.visible && !el.material.wireframe ? getVal(el) : 0}%
             </PerfB>
           )}
         </PerfI>
       )}
     </>
-  );
-};
+  )
+}
 const ProgramUI: FC<ProgramUIProps> = ({ el }) => {
-  const [showProgram, setShowProgram] = useState(el.visible);
+  const [showProgram, setShowProgram] = useState(el.visible)
 
-  const [toggleProgram, set] = useState(el.expand);
-  const [texNumber, setTexNumber] = useState(0);
-  const { meshes, program, material }: any = el;
+  const [toggleProgram, set] = useState(el.expand)
+  const [texNumber, setTexNumber] = useState(0)
+  const { meshes, program, material }: any = el
 
   return (
     <ProgramGeo>
       <ProgramHeader
         onClick={() => {
-          el.expand = !toggleProgram;
+          el.expand = !toggleProgram
 
           Object.keys(meshes).forEach((key) => {
-            const mesh = meshes[key];
+            const mesh = meshes[key]
 
-            mesh.material.wireframe = false;
-          });
+            mesh.material.wireframe = false
+          })
 
-          set(!toggleProgram);
-        }}
-      >
+          set(!toggleProgram)
+        }}>
         <Toggle style={{ marginRight: '6px' }}>
           {toggleProgram ? (
             <span>
@@ -302,11 +290,7 @@ const ProgramUI: FC<ProgramUIProps> = ({ el }) => {
             </PerfI>
             {texNumber > 0 && (
               <PerfI style={{ height: 'auto', width: 'auto', margin: '0 4px' }}>
-                {texNumber > 1 ? (
-                  <IoIosImages style={{ top: '-1px' }} />
-                ) : (
-                  <IoIosImage style={{ top: '-1px' }} />
-                )}
+                {texNumber > 1 ? <IoIosImages style={{ top: '-1px' }} /> : <IoIosImage style={{ top: '-1px' }} />}
                 {texNumber}
                 <small>tex</small>
               </PerfI>
@@ -325,42 +309,35 @@ const ProgramUI: FC<ProgramUIProps> = ({ el }) => {
         <ToggleVisible
           onPointerEnter={() => {
             Object.keys(meshes).forEach((key) => {
-              const mesh = meshes[key];
-              mesh.material.wireframe = true;
-            });
+              const mesh = meshes[key]
+              mesh.material.wireframe = true
+            })
           }}
           onPointerLeave={() => {
             Object.keys(meshes).forEach((key) => {
-              const mesh = meshes[key];
-              mesh.material.wireframe = false;
-            });
+              const mesh = meshes[key]
+              mesh.material.wireframe = false
+            })
           }}
           onClick={(e: any) => {
-            e.stopPropagation();
+            e.stopPropagation()
 
             Object.keys(meshes).forEach((key) => {
-              const mesh = meshes[key];
-              const invert = !showProgram;
-              mesh.visible = invert;
-              el.visible = invert;
-              setShowProgram(invert);
-            });
-          }}
-        >
+              const mesh = meshes[key]
+              const invert = !showProgram
+              mesh.visible = invert
+              el.visible = invert
+              setShowProgram(invert)
+            })
+          }}>
           {showProgram ? <BsEyeFill /> : <BsEyeSlashFill />}
         </ToggleVisible>
       </ProgramHeader>
-      <div
-        style={{ maxHeight: toggleProgram ? '9999px' : 0, overflow: 'hidden' }}
-      >
+      <div style={{ maxHeight: toggleProgram ? '9999px' : 0, overflow: 'hidden' }}>
         <ProgramsULHeader>
           <GoSettings /> Uniforms:
         </ProgramsULHeader>
-        <UniformsGL
-          program={program}
-          material={material}
-          setTexNumber={setTexNumber}
-        />
+        <UniformsGL program={program} material={material} setTexNumber={setTexNumber} />
         <ProgramsULHeader>
           <IoShapes /> Geometries:
         </ProgramsULHeader>
@@ -381,10 +358,7 @@ const ProgramUI: FC<ProgramUIProps> = ({ el }) => {
                         </div>
                         <br />
                         <div>
-                          {Math.round(
-                            (estimateBytesUsed(meshes[key].geometry) / 1024) *
-                              1000
-                          ) / 1000}
+                          {Math.round((estimateBytesUsed(meshes[key].geometry) / 1024) * 1000) / 1000}
                           Kb
                           <small> memory used</small>
                         </div>
@@ -396,28 +370,27 @@ const ProgramUI: FC<ProgramUIProps> = ({ el }) => {
         </ProgramsUL>
         <ProgramConsole
           onClick={() => {
-            console.info(material);
-          }}
-        >
+            console.info(material)
+          }}>
           console.info({material.type})
         </ProgramConsole>
       </div>
     </ProgramGeo>
-  );
-};
+  )
+}
 
 export const ProgramsUI: FC<PerfProps> = () => {
-  usePerfStore((state) => state.triggerProgramsUpdate);
-  const programs = usePerfStore((state) => state.programs);
+  usePerfStore((state) => state.triggerProgramsUpdate)
+  const programs = usePerfStore((state) => state.programs)
   return (
     <>
       {programs &&
         Array.from(programs.values()).map((el: ProgramsPerf) => {
           if (!el) {
-            return null;
+            return null
           }
-          return el ? <ProgramUI key={el.material.uuid} el={el} /> : null;
+          return el ? <ProgramUI key={el.material.uuid} el={el} /> : null
         })}
     </>
-  );
-};
+  )
+}

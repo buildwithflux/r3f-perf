@@ -1,36 +1,28 @@
-import React, { FC, useRef } from 'react';
-import { FaMemory } from 'react-icons/fa';
-import { RiCpuLine } from 'react-icons/ri';
-import { RiCpuFill } from 'react-icons/ri';
-import { RiRhythmLine } from 'react-icons/ri';
-import { VscPulse } from 'react-icons/vsc';
-import { AiOutlineCodeSandbox } from 'react-icons/ai';
-import { FaRegImages } from 'react-icons/fa';
-import { FiLayers } from 'react-icons/fi';
-import { BsTriangle } from 'react-icons/bs';
-import { VscActivateBreakpoints } from 'react-icons/vsc';
-import { FaServer } from 'react-icons/fa';
-import { RiArrowDownSFill } from 'react-icons/ri';
-import { RiArrowRightSFill } from 'react-icons/ri';
-import { ProgramsUI } from './ui/program';
-import { ChartUI } from './ui/graph';
+import React, { FC, useRef } from 'react'
+import { FaMemory } from '@react-icons/all-files/fa/FaMemory'
+import { RiCpuLine } from '@react-icons/all-files/ri/RiCpuLine'
+import { RiCpuFill } from '@react-icons/all-files/ri/RiCpuFill'
+import { RiRhythmLine } from '@react-icons/all-files/ri/RiRhythmLine'
+import { VscPulse } from '@react-icons/all-files/vsc/VscPulse'
+import { AiOutlineCodeSandbox } from '@react-icons/all-files/ai/AiOutlineCodeSandbox'
+import { FaRegImages } from '@react-icons/all-files/fa/FaRegImages'
+import { FiLayers } from '@react-icons/all-files/fi/FiLayers'
+import { BsTriangle } from '@react-icons/all-files/bs/BsTriangle'
+import { VscActivateBreakpoints } from '@react-icons/all-files/vsc/VscActivateBreakpoints'
+import { FaServer } from '@react-icons/all-files/fa/FaServer'
+import { RiArrowDownSFill } from '@react-icons/all-files/ri/RiArrowDownSFill'
+import { RiArrowRightSFill } from '@react-icons/all-files/ri/RiArrowRightSFill'
+import { ProgramsUI } from './ui/program'
+import { ChartUI } from './ui/graph'
 
-import { Html } from './html';
-import { usePerfStore, Headless } from './headless';
-import { PerfProps } from '.';
+import { Html } from './html'
+import { usePerfStore, Headless } from './headless'
+import { PerfProps } from '.'
 
-import {
-  Toggle,
-  PerfS,
-  PerfIContainer,
-  PerfI,
-  PerfB,
-  ToggleContainer,
-  ContainerScroll,
-} from './styles';
+import { Toggle, PerfS, PerfIContainer, PerfI, PerfB, ToggleContainer, ContainerScroll } from './styles'
 
 interface colors {
-  [index: string]: string;
+  [index: string]: string
 }
 
 export const colorsGraph = (colorBlind: boolean | undefined) => {
@@ -38,31 +30,20 @@ export const colorsGraph = (colorBlind: boolean | undefined) => {
     fps: colorBlind ? '100, 143, 255' : '238,38,110',
     cpu: colorBlind ? '254, 254, 98' : '66,226,46',
     gpu: colorBlind ? '254,254,254' : '253,151,31',
-  };
-  return colors;
-};
+  }
+  return colors
+}
 
-const DynamicUI: FC<PerfProps> = ({
-  showGraph,
-  trackCPU,
-  trackGPU,
-  colorBlind,
-}) => {
-  const log = usePerfStore((state) => state.log);
-  const gl = usePerfStore((state) => state.gl);
+const DynamicUI: FC<PerfProps> = ({ showGraph, trackCPU, trackGPU, colorBlind }) => {
+  const log = usePerfStore((state) => state.log)
+  const gl = usePerfStore((state) => state.gl)
 
   return log ? (
     <PerfIContainer>
       {trackCPU && (
         <PerfI>
           <RiCpuLine />
-          <PerfB
-            style={
-              showGraph ? { color: `rgb(${colorsGraph(colorBlind).cpu})` } : {}
-            }
-          >
-            CPU
-          </PerfB>{' '}
+          <PerfB style={showGraph ? { color: `rgb(${colorsGraph(colorBlind).cpu})` } : {}}>CPU</PerfB>{' '}
           <span>{(Math.round(log.cpu * 100) || 0).toFixed(2)}%</span>
         </PerfI>
       )}
@@ -76,8 +57,7 @@ const DynamicUI: FC<PerfProps> = ({
                   color: `rgb(${colorsGraph(colorBlind).gpu.toString()})`,
                 }
               : {}
-          }
-        >
+          }>
           GPU
         </PerfB>{' '}
         <span>{(Math.round(log.gpu * 1000) / 1000 || 0).toFixed(2)}</span>
@@ -90,80 +70,54 @@ const DynamicUI: FC<PerfProps> = ({
       </PerfI>
       <PerfI>
         <VscPulse />
-        <PerfB
-          style={
-            showGraph ? { color: `rgb(${colorsGraph(colorBlind).fps})` } : {}
-          }
-        >
-          FPS
-        </PerfB>{' '}
+        <PerfB style={showGraph ? { color: `rgb(${colorsGraph(colorBlind).fps})` } : {}}>FPS</PerfB>{' '}
         <span>{log.fps}</span>
       </PerfI>
       {gl && (
         <PerfI>
           <FiLayers />
-          <PerfB>{gl.info.render.calls === 1 ? 'call' : 'calls'}</PerfB>{' '}
-          <span>{gl.info.render.calls}</span>
+          <PerfB>{gl.info.render.calls === 1 ? 'call' : 'calls'}</PerfB> <span>{gl.info.render.calls}</span>
         </PerfI>
       )}
       {gl && (
         <PerfI>
           <BsTriangle />
-          <PerfB>Triangles</PerfB>{' '}
-          <span>{gl.info.render.triangles.toString()}</span>
+          <PerfB>Triangles</PerfB> <span>{gl.info.render.triangles.toString()}</span>
         </PerfI>
       )}
     </PerfIContainer>
-  ) : null;
-};
+  ) : null
+}
 
-const PerfUI: FC<PerfProps> = ({
-  showGraph,
-  trackCPU,
-  trackGPU,
-  colorBlind,
-  openByDefault,
-}) => {
+const PerfUI: FC<PerfProps> = ({ showGraph, trackCPU, trackGPU, colorBlind, openByDefault }) => {
   return (
     <>
-      <DynamicUI
-        showGraph={showGraph}
-        trackGPU={trackGPU}
-        trackCPU={trackCPU}
-        colorBlind={colorBlind}
-      />
+      <DynamicUI showGraph={showGraph} trackGPU={trackGPU} trackCPU={trackCPU} colorBlind={colorBlind} />
       <PerfThree openByDefault={openByDefault} />
     </>
-  );
-};
+  )
+}
 
 const InfoUI: FC<PerfProps> = () => {
-  usePerfStore((state) => state.log);
-  const gl = usePerfStore((state) => state.gl);
-  if (!gl) return null;
-  const { info } = gl;
+  usePerfStore((state) => state.log)
+  const gl = usePerfStore((state) => state.gl)
+  if (!gl) return null
+  const { info } = gl
   return (
     <div>
       <PerfI>
         <AiOutlineCodeSandbox />
-        <PerfB>
-          {info.memory.geometries === 1 ? 'Geometry' : 'Geometries'}
-        </PerfB>{' '}
-        <span>{info.memory.geometries}</span>
+        <PerfB>{info.memory.geometries === 1 ? 'Geometry' : 'Geometries'}</PerfB> <span>{info.memory.geometries}</span>
       </PerfI>
       <PerfI>
         <FaRegImages />
-        <PerfB>
-          {info.memory.textures === 1 ? 'Texture' : 'Textures'}
-        </PerfB>{' '}
-        <span>{info.memory.textures}</span>
+        <PerfB>{info.memory.textures === 1 ? 'Texture' : 'Textures'}</PerfB> <span>{info.memory.textures}</span>
       </PerfI>
       <PerfI>
         <FaServer />
         {info.programs && (
           <>
-            <PerfB>{info.programs.length === 1 ? 'shader' : 'shaders'}</PerfB>{' '}
-            <span>{info.programs.length}</span>
+            <PerfB>{info.programs.length === 1 ? 'shader' : 'shaders'}</PerfB> <span>{info.programs.length}</span>
           </>
         )}
       </PerfI>
@@ -176,25 +130,24 @@ const InfoUI: FC<PerfProps> = () => {
         <PerfB>Points</PerfB> <span>{info.render.points}</span>
       </PerfI>
     </div>
-  );
-};
+  )
+}
 
 const ToggleEl = ({ tab, title, set }: any) => {
-  const tabStore = usePerfStore((state) => state.tab);
+  const tabStore = usePerfStore((state) => state.tab)
   return (
     <Toggle
       className={`${tabStore === tab ? ' __perf_toggle_tab_active' : ''}`}
       onClick={() => {
-        set(true);
-        usePerfStore.setState({ tab: tab });
-      }}
-    >
+        set(true)
+        usePerfStore.setState({ tab: tab })
+      }}>
       <span>{title}</span>
     </Toggle>
-  );
-};
+  )
+}
 const PerfThree: FC<PerfProps> = ({ openByDefault }) => {
-  const [show, set] = React.useState(openByDefault);
+  const [show, set] = React.useState(openByDefault)
 
   // const initialDpr = useThree((state) => state.viewport.initialDpr)
 
@@ -207,9 +160,8 @@ const PerfThree: FC<PerfProps> = ({ openByDefault }) => {
         <ToggleEl tab="infos" title="Infos" set={set} />
         <Toggle
           onClick={() => {
-            set(!show);
-          }}
-        >
+            set(!show)
+          }}>
           {show ? (
             <span>
               <RiArrowDownSFill /> Minimize
@@ -222,11 +174,11 @@ const PerfThree: FC<PerfProps> = ({ openByDefault }) => {
         </Toggle>
       </ToggleContainer>
     </span>
-  );
-};
+  )
+}
 
 const TabContainers = ({ show }: any) => {
-  const tab = usePerfStore((state) => state.tab);
+  const tab = usePerfStore((state) => state.tab)
 
   return (
     <>
@@ -239,8 +191,8 @@ const TabContainers = ({ show }: any) => {
         </ContainerScroll>
       )}
     </>
-  );
-};
+  )
+}
 /**
  * Performance profiler component
  */
@@ -254,7 +206,7 @@ const Gui: FC<PerfProps> = ({
   position,
   chart,
 }) => {
-  const perfContainerRef = useRef(null);
+  const perfContainerRef = useRef(null)
 
   return (
     <>
@@ -262,12 +214,8 @@ const Gui: FC<PerfProps> = ({
       {/* @ts-ignore */}
       <Html transform={false}>
         <PerfS
-          className={
-            (className ? ' '.concat(className) : ' ') +
-            ` ${position ? position : ''}`
-          }
-          ref={perfContainerRef}
-        >
+          className={(className ? ' '.concat(className) : ' ') + ` ${position ? position : ''}`}
+          ref={perfContainerRef}>
           <PerfUI
             colorBlind={colorBlind}
             showGraph={showGraph}
@@ -286,7 +234,7 @@ const Gui: FC<PerfProps> = ({
         </PerfS>
       </Html>
     </>
-  );
-};
+  )
+}
 
-export default Gui;
+export default Gui
